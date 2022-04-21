@@ -25,19 +25,28 @@ function Layout() {
 }
 
 function Home(props) {
-  let { numberOfGuessesAllowed } = props;
+  let { numberOfGuessesAllowed, minimumNumber, maximumNumber } = props;
 
   return (
     <div>
       <h2>Guessing Game</h2>
       <p>Number of Guesses Allowed: {numberOfGuessesAllowed}</p>
+      <p>
+        Range of Numbers: {minimumNumber} - {maximumNumber}
+      </p>
     </div>
   );
 }
 
 function Settings(props) {
-  const { setNumberOfGuessesAllowed, setMinimumNumber, setMaximumNumber } =
-    props;
+  const {
+    numberOfGuessesAllowed,
+    minimumNumber,
+    maximumNumber,
+    setNumberOfGuessesAllowed,
+    setMinimumNumber,
+    setMaximumNumber,
+  } = props;
   return (
     <div>
       <h2>User Settings</h2>
@@ -47,7 +56,7 @@ function Settings(props) {
           type="number"
           name="numberGuesses"
           id="numberGuesses"
-          defaultValue={1}
+          defaultValue={numberOfGuessesAllowed}
           onChange={(e) => setNumberOfGuessesAllowed(e.target.value)}
         />
         <br />
@@ -56,7 +65,7 @@ function Settings(props) {
           type="number"
           name="minNum"
           id="minNum"
-          defaultValue={1}
+          defaultValue={minimumNumber}
           onChange={(e) => setMinimumNumber(e.target.value)}
         />
         <br />
@@ -65,7 +74,7 @@ function Settings(props) {
           type="number"
           name="maxNum"
           id="maxNum"
-          defaultValue={100}
+          defaultValue={maximumNumber}
           onChange={(e) => setMaximumNumber(e.target.value)}
         />
       </form>
@@ -116,6 +125,9 @@ export function GuessApp() {
             path="settings"
             element={
               <Settings
+                numberOfGuessesAllowed={numberOfGuessesAllowed}
+                minimumNumber={minimumNumber}
+                maximumNumber={maximumNumber}
                 setNumberOfGuessesAllowed={setNumberOfGuessesAllowed}
                 setMinimumNumber={setMinimumNumber}
                 setMaximumNumber={setMaximumNumber}
