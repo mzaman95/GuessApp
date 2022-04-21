@@ -103,9 +103,7 @@ export function GuessApp() {
   const [minimumNumber, setMinimumNumber] = useState(1);
   const [maximumNumber, setMaximumNumber] = useState(100);
 
-  console.log(
-    numberOfGuessesAllowed + " " + minimumNumber + " " + maximumNumber
-  );
+  const [roundNumber, setRoundNumber] = useState(1);
 
   return (
     <BrowserRouter>
