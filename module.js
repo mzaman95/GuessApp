@@ -25,12 +25,20 @@ function Layout() {
 }
 
 function Home(props) {
-  let { numberOfGuessesAllowed, minimumNumber, maximumNumber } = props;
+  let {
+    numberOfGuessesAllowed,
+    minimumNumber,
+    maximumNumber,
+    numberGuessedCorrectly,
+    setNumberGuessedCorrectly,
+    setAverageGuessesNeeded,
+  } = props;
   const [roundNumber, setRoundNumber] = useState(0);
   const [answer, setAnswer] = useState(0);
   const [guess, setGuess] = useState("");
   const [guessNumber, setGuessNumber] = useState(1);
   const [message, setMessage] = useState("");
+  const [totalGuessCount, setTotalGuessCount] = useState(0);
 
   const startNewRound = () => {
     setAnswer(
@@ -59,6 +67,7 @@ function Home(props) {
   };
 
   const handleSubmit = (event) => {
+    console.log(answer);
     event.preventDefault();
     setGuessNumber(guessNumber + 1);
 
@@ -67,8 +76,10 @@ function Home(props) {
         `Sorry, you already reached the maximum number of allowed guesses. The answer was ${answer}. Please start a new round.`
       );
     } else {
+      setTotalGuessCount(totalGuessCount + 1);
       if (guess == answer) {
-        setMessage("You guessed correctly.");
+        setNumberGuessedCorrectly(numberGuessedCorrectly + 1);
+        setMessage("You guessed correctly. Start a new round.");
       }
       if (guess < answer) {
         setMessage("Your guess is too low.");
@@ -77,6 +88,7 @@ function Home(props) {
         setMessage("Your guess is too high.");
       }
     }
+    setAverageGuessesNeeded(totalGuessCount / roundNumber);
   };
 
   return (
@@ -117,6 +129,7 @@ function Settings(props) {
           onChange={(e) => setNumberOfGuessesAllowed(e.target.value)}
         />
         <br />
+        <br />
         <label htmlFor="minNum">Minimum Number of Guessing Range: </label>
         <input
           type="number"
@@ -125,6 +138,7 @@ function Settings(props) {
           defaultValue={minimumNumber}
           onChange={(e) => setMinimumNumber(e.target.value)}
         />
+        <br />
         <br />
         <label htmlFor="maxNum">Maximum Number of Guessing Range: </label>
         <input
@@ -139,10 +153,13 @@ function Settings(props) {
   );
 }
 
-function Stats() {
+function Stats(props) {
+  const { numberGuessedCorrectly, averageGuessesNeeded } = props;
   return (
     <div>
       <h2>Player Stats</h2>
+      <p>Number Guessed Correctly: {numberGuessedCorrectly} </p>
+      <p>Average Guesses Needed: {averageGuessesNeeded} </p>
     </div>
   );
 }
@@ -159,6 +176,8 @@ export function GuessApp() {
   const [numberOfGuessesAllowed, setNumberOfGuessesAllowed] = useState(2);
   const [minimumNumber, setMinimumNumber] = useState(1);
   const [maximumNumber, setMaximumNumber] = useState(100);
+  const [numberGuessedCorrectly, setNumberGuessedCorrectly] = useState(0);
+  const [averageGuessesNeeded, setAverageGuessesNeeded] = useState(0);
 
   return (
     <BrowserRouter>
@@ -171,6 +190,9 @@ export function GuessApp() {
                 numberOfGuessesAllowed={numberOfGuessesAllowed}
                 minimumNumber={minimumNumber}
                 maximumNumber={maximumNumber}
+                numberGuessedCorrectly={numberGuessedCorrectly}
+                setNumberGuessedCorrectly={setNumberGuessedCorrectly}
+                setAverageGuessesNeeded={setAverageGuessesNeeded}
               />
             }
           />
@@ -187,7 +209,15 @@ export function GuessApp() {
               />
             }
           />
-          <Route path="stats" element={<Stats />} />
+          <Route
+            path="stats"
+            element={
+              <Stats
+                numberGuessedCorrectly={numberGuessedCorrectly}
+                averageGuessesNeeded={averageGuessesNeeded}
+              />
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
