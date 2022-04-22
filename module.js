@@ -5,7 +5,7 @@ function Layout() {
   return (
     <>
       <nav>
-        <ul>
+        <ul style={{ listStyleType: "none" }}>
           <li>
             <Link to="/">Home</Link>
           </li>
@@ -26,6 +26,58 @@ function Layout() {
 
 function Home(props) {
   let { numberOfGuessesAllowed, minimumNumber, maximumNumber } = props;
+  const [roundNumber, setRoundNumber] = useState(0);
+  const [answer, setAnswer] = useState(0);
+  const [guess, setGuess] = useState("");
+  const [guessNumber, setGuessNumber] = useState(1);
+  const [message, setMessage] = useState("");
+
+  const startNewRound = () => {
+    setAnswer(
+      Math.floor(Math.random() * (maximumNumber - minimumNumber + 1)) +
+        minimumNumber
+    );
+    setRoundNumber(roundNumber + 1);
+    setGuess("");
+    setGuessNumber(1);
+    setMessage("");
+  };
+
+  const guessForm = () => {
+    return (
+      <form onSubmit={handleSubmit}>
+        <label>Guess: </label>
+        <input
+          type="number"
+          value={guess}
+          onChange={(e) => setGuess(e.target.value)}
+        />{" "}
+        &nbsp;
+        <input type="submit" />
+      </form>
+    );
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setGuessNumber(guessNumber + 1);
+
+    if (guessNumber > numberOfGuessesAllowed) {
+      setMessage(
+        `Sorry, you already reached the maximum number of allowed guesses. The answer was ${answer}. Please start a new round.`
+      );
+    } else {
+      if (guess == answer) {
+        setMessage("You guessed correctly.");
+      }
+      if (guess < answer) {
+        setMessage("Your guess is too low.");
+      }
+      if (guess > answer) {
+        setMessage("Your guess is too high.");
+      }
+    }
+  };
 
   return (
     <div>
@@ -34,6 +86,11 @@ function Home(props) {
       <p>
         Range of Numbers: {minimumNumber} - {maximumNumber}
       </p>
+      <button onClick={startNewRound}>Start New Round</button>
+      <br />
+      <br />
+      {roundNumber > 0 && guessForm()}
+      {message}
     </div>
   );
 }
@@ -99,11 +156,9 @@ function NotFound() {
 }
 
 export function GuessApp() {
-  const [numberOfGuessesAllowed, setNumberOfGuessesAllowed] = useState(1);
+  const [numberOfGuessesAllowed, setNumberOfGuessesAllowed] = useState(2);
   const [minimumNumber, setMinimumNumber] = useState(1);
   const [maximumNumber, setMaximumNumber] = useState(100);
-
-  const [roundNumber, setRoundNumber] = useState(1);
 
   return (
     <BrowserRouter>
