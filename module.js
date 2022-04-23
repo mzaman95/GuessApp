@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Outlet, Link } from "react-router-dom";
 
@@ -38,7 +39,9 @@ function Home(props) {
   const [guess, setGuess] = useState("");
   const [guessNumber, setGuessNumber] = useState(1);
   const [message, setMessage] = useState("");
+  const [subMessage, setSubMessage] = useState("");
   const [totalGuessCount, setTotalGuessCount] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const startNewRound = () => {
     setAnswer(
@@ -49,6 +52,8 @@ function Home(props) {
     setGuess("");
     setGuessNumber(1);
     setMessage("");
+    setSubMessage("");
+    setIsDisabled(false);
   };
 
   const guessForm = () => {
@@ -61,25 +66,25 @@ function Home(props) {
           onChange={(e) => setGuess(e.target.value)}
         />{" "}
         &nbsp;
-        <input type="submit" />
+        <input type="submit" disabled={isDisabled} />
       </form>
     );
   };
 
   const handleSubmit = (event) => {
-    console.log(answer);
     event.preventDefault();
     setGuessNumber(guessNumber + 1);
 
-    if (guessNumber > numberOfGuessesAllowed) {
-      setMessage(
-        `Sorry, you already reached the maximum number of allowed guesses. The answer was ${answer}. Please start a new round.`
-      );
-    } else {
-      setTotalGuessCount(totalGuessCount + 1);
+    let isGuessedCorrectly = false;
+
+    if (guessNumber <= numberOfGuessesAllowed) {
+      let total = totalGuessCount + 1;
+      setTotalGuessCount(total);
       if (guess == answer) {
         setNumberGuessedCorrectly(numberGuessedCorrectly + 1);
         setMessage("You guessed correctly. Start a new round.");
+        setIsDisabled(true);
+        isGuessedCorrectly = true;
       }
       if (guess < answer) {
         setMessage("Your guess is too low.");
@@ -87,8 +92,13 @@ function Home(props) {
       if (guess > answer) {
         setMessage("Your guess is too high.");
       }
+      setAverageGuessesNeeded((total / roundNumber).toFixed(2));
     }
-    setAverageGuessesNeeded(totalGuessCount / roundNumber);
+
+    if (guessNumber == numberOfGuessesAllowed && isGuessedCorrectly == false) {
+      setSubMessage(` The answer was ${answer}. Please start a new round.`);
+      setIsDisabled(true);
+    }
   };
 
   return (
@@ -103,6 +113,7 @@ function Home(props) {
       <br />
       {roundNumber > 0 && guessForm()}
       {message}
+      {subMessage}
     </div>
   );
 }
@@ -173,7 +184,7 @@ function NotFound() {
 }
 
 export function GuessApp() {
-  const [numberOfGuessesAllowed, setNumberOfGuessesAllowed] = useState(2);
+  const [numberOfGuessesAllowed, setNumberOfGuessesAllowed] = useState(3);
   const [minimumNumber, setMinimumNumber] = useState(1);
   const [maximumNumber, setMaximumNumber] = useState(100);
   const [numberGuessedCorrectly, setNumberGuessedCorrectly] = useState(0);
